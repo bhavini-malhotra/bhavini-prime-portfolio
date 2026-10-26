@@ -2,7 +2,7 @@ import { expect, test } from './fixtures';
 
 /**
  * Smoke test for the live site, run by .github/workflows/deploy.yml with DEPLOYED_URL set to the
- * Pages URL (which ends in the base path, e.g. https://archit2501.github.io/bhavini-prime-portfolio/).
+ * Pages URL (which ends in the base path, e.g. https://bhavini-malhotra.github.io/bhavini-prime-portfolio/, or her own domain).
  * Paths here are relative, so they resolve under that base.
  */
 const PAGES = ['', 'title/f1jobs/', 'watch/f1jobs/', 'skills/', 'career-guide/', 'contact/'];
