@@ -92,26 +92,38 @@ Never paste them in plain text into code, comments or content.
 GitHub Pages, by hand only: `.github/workflows/deploy.yml` runs from the Actions tab (Run workflow) and nowhere else.
 
 - It refuses any branch but `main` and any commit whose CI run didn't pass.
-- It builds the public site with `REQUIRE_VERIFIED=1`, the right `BASE_PATH` and `SITE_URL`, and scans it with the brand and privacy guards.
+- It builds the public site with `REQUIRE_VERIFIED=1` for the right address, and scans it with the brand and privacy guards.
 - It publishes the site, then runs `tests/e2e/deployed.spec.ts` against the live URL.
+
+The site lives at **https://bhavinimalhotra.com**, with `www` redirecting to it.
+
+- **The domain is set in `public/CNAME`.** With that file, the build serves the site from the domain's root. Without it, the site goes back to `https://<owner>.github.io/<repo>/`, and the build sets the base path to match. Every internal link goes through `withBase` (`src/lib/url.ts`), so both work.
+- **The domain must also be set under Settings → Pages → Custom domain, with "Enforce HTTPS" on.** Only the repository owner (Bhavini) can change that setting.
+- **DNS** (Namecheap):
+
+| Type  | Host  | Value                                                                                                        |
+| ----- | ----- | ------------------------------------------------------------------------------------------------------------ |
+| A     | `@`   | `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` (one record each)                 |
+| AAAA  | `@`   | `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153` (one record each) |
+| CNAME | `www` | `bhavini-malhotra.github.io.` (the repository owner's `github.io`; change it if the repo moves)              |
 
 Before the first run:
 
 1. In the repository settings, under Pages, set the source to **GitHub Actions**.
 2. Keep every figure in `src/content/figures.json` confirmed (`"verified": true`; all are today). The public build refuses any she hasn't confirmed.
 
-The project page lives at `https://archit2501.github.io/bhavini-prime-portfolio/`. Every internal link goes through `withBase` (`src/lib/url.ts`), so the base path is respected everywhere. To rehearse it locally:
+To rehearse the deploy locally:
 
 ```bash
-BASE_PATH=/bhavini-prime-portfolio/ npm run build
+npm run build
 ```
 
 ```bash
-BASE_PATH=/bhavini-prime-portfolio/ npx astro preview --port 4433
+npx astro preview --port 4433
 ```
 
 ```bash
-DEPLOYED_URL=http://localhost:4433/bhavini-prime-portfolio/ npx playwright test --project=desktop
+DEPLOYED_URL=http://localhost:4433/ npx playwright test --project=desktop
 ```
 
 ## Licence

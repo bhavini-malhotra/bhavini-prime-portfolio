@@ -39,11 +39,20 @@ jobs:
       - uses: actions/setup-node@v7
         with: { node-version: '24', cache: 'npm' }
       - run: npm ci
+      # Her own domain (public/CNAME) serves the site from the root; without one, GitHub Pages
+      # serves it from /<repo>/ on <owner>.github.io.
+      - name: Where it's served
+        run: |
+          if [ -s public/CNAME ]; then
+            echo "SITE_URL=https://$(tr -d '[:space:]' < public/CNAME)" >> "$GITHUB_ENV"
+            echo "BASE_PATH=/" >> "$GITHUB_ENV"
+          else
+            echo "SITE_URL=https://${{ github.repository_owner }}.github.io" >> "$GITHUB_ENV"
+            echo "BASE_PATH=/${{ github.event.repository.name }}/" >> "$GITHUB_ENV"
+          fi
       # The public build refuses any figure Bhavini hasn't confirmed (REQUIRE_VERIFIED).
       - run: npm run build
         env:
-          BASE_PATH: /${{ github.event.repository.name }}/
-          SITE_URL: https://${{ github.repository_owner }}.github.io
           REQUIRE_VERIFIED: '1'
       - run: npx vitest run tests/brand-guard.test.ts tests/contact-privacy.test.ts
       - uses: actions/upload-pages-artifact@v4
